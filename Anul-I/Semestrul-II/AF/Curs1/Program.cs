@@ -55,7 +55,7 @@ namespace Curs1
                         k--;
                     }
                 }
-                
+
                 if (verificare != copie)
                 {
                     Console.Write($"\n\n Nu s-au gasit decat {verificare} elemente care sa respecte cerinta. ");
@@ -158,7 +158,7 @@ namespace Curs1
                     {
                         if (cmmdc4(vector[i], vector[j]) == 1)
                         {
-                            Console.Write("("  + vector[i] + "," + vector[j] + ") ");
+                            Console.Write("(" + vector[i] + "," + vector[j] + ") ");
                         }
                     }
                 }
@@ -170,7 +170,7 @@ namespace Curs1
         }
         private static int cmmdc4(int numar1, int numar2)
         {
-            int aux; 
+            int aux;
 
             if (numar1 == 1 || numar2 == 1)
             {
@@ -199,7 +199,7 @@ namespace Curs1
                     suma += i + numar / i;
                 }
             }
-            
+
             if (suma == 1)
             {
                 return 0;
@@ -207,7 +207,7 @@ namespace Curs1
             else
             {
                 return suma;
-            }      
+            }
         }
         private static bool putere4(int numar)
         {
@@ -245,7 +245,7 @@ namespace Curs1
                         Console.Write(vector[i - 1] + " " + (i - poz) + " ");
 
                         poz = i;
-                        
+
                         element = vector[i];
                     }
                 }
@@ -255,7 +255,7 @@ namespace Curs1
             catch (Exception)
             {
                 Console.Write("\n Nu ati introdus date procesabile conform cerintei. ");
-            }      
+            }
         }
 
         private static void problema2()
