@@ -17,11 +17,6 @@ namespace Laborator2
             return "(" + numerator + ", " + denominator + ")"; 
         }
 
-        private int lcm(int a, int b)
-        {
-            return a * b / gcd(a, b);
-        }
-
         private int gcd(int a, int b)
         {
             int c;
@@ -33,13 +28,18 @@ namespace Laborator2
                 b = c;
             }
 
+            if (a < 0)
+            {
+                a = -a;
+            }
+
             return a;
         }
 
         private void Simplify(ref int numb1, ref int numb2)
         {
             int divisor = gcd(numb1, numb2);
-
+            
             numb1 /= divisor;
             numb2 /= divisor;
         }
@@ -53,9 +53,11 @@ namespace Laborator2
             {
                 if (denominator % numb2.denominator != 0 && numb2.denominator % denominator != 0)
                 {
-                    int multiple = lcm(denominator, numb2.denominator);
+                    int multiple = denominator * numb2.denominator / gcd(denominator, numb2.denominator);
+
                     int numeratorResult = numerator * (multiple / denominator) + 
                                             numb2.numerator * (multiple / numb2.denominator);
+
                     int divisor = gcd(numeratorResult, multiple);
 
                     return new Rational(numeratorResult / divisor, multiple / divisor);
@@ -65,6 +67,7 @@ namespace Laborator2
                     if (denominator < numb2.denominator)
                     {
                         int numeratorResult = numerator * (numb2.denominator / denominator) + numb2.numerator;
+
                         int divisor = gcd(numeratorResult, numb2.denominator);
 
                         return new Rational(numeratorResult / divisor, numb2.denominator / divisor);
@@ -72,6 +75,7 @@ namespace Laborator2
                     else
                     {
                         int numeratorResult = numerator + numb2.numerator * (denominator / numb2.denominator);
+
                         int divisor = gcd(numeratorResult, denominator);
 
                         return new Rational(numeratorResult / divisor, denominator / divisor);
@@ -81,6 +85,7 @@ namespace Laborator2
             else
             {
                 int numeratorResult = numerator + numb2.numerator;
+
                 int divisor = gcd(numeratorResult, denominator);
 
                 return new Rational(numeratorResult / divisor, denominator / divisor);
@@ -96,9 +101,11 @@ namespace Laborator2
             {
                 if (denominator % numb2.denominator != 0 && numb2.denominator % denominator != 0)
                 {
-                    int multiple = lcm(denominator, numb2.denominator);
+                    int multiple = denominator * numb2.denominator / gcd(denominator, numb2.denominator);
+
                     int numeratorResult = numerator * (multiple / denominator) -
                                             numb2.numerator * (multiple / numb2.denominator);
+
                     int divisor = gcd(numeratorResult, multiple);
 
                     return new Rational(numeratorResult / divisor, multiple / divisor);
@@ -108,6 +115,7 @@ namespace Laborator2
                     if (denominator < numb2.denominator)
                     {
                         int numeratorResult = numerator * (numb2.denominator / denominator) - numb2.numerator;
+
                         int divisor = gcd(numeratorResult, numb2.denominator);
 
                         return new Rational(numeratorResult / divisor, numb2.denominator / divisor);
@@ -115,6 +123,7 @@ namespace Laborator2
                     else
                     {
                         int numeratorResult = numerator - numb2.numerator * (denominator / numb2.denominator);
+
                         int divisor = gcd(numeratorResult, denominator);
 
                         return new Rational(numeratorResult / divisor, denominator / divisor);
@@ -124,6 +133,7 @@ namespace Laborator2
             else
             {
                 int numeratorResult = numerator - numb2.numerator;
+
                 int divisor = gcd(numeratorResult, denominator);
 
                 return new Rational(numeratorResult / divisor, denominator / divisor);
@@ -137,8 +147,7 @@ namespace Laborator2
             Simplify(ref numerator, ref numb2.denominator);
             Simplify(ref denominator, ref numb2.numerator);
 
-            Console.Write($"\n\n {numerator}, {denominator}     {numb2.numerator}, {numb2.denominator}\n\n");
-
+            
             int numeratorResult = numerator * numb2.numerator;
             int denominatorResult = denominator * numb2.denominator;
             int divisor = gcd(numeratorResult, denominatorResult);
