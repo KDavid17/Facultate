@@ -1226,7 +1226,11 @@ namespace Harvest
 
             Console.SetCursorPosition(message.Length, rows);
 
-            //Thread.Sleep(1250);
+            time = 1250;
+
+            Thread.Sleep(time);
+
+            time = 5;
 
             Print(check);
 
@@ -1241,7 +1245,7 @@ namespace Harvest
             {
                 Console.Write(message[i]);
 
-                //Thread.Sleep(time);
+                Thread.Sleep(time);
             }
 
             Console.Write("\n");
