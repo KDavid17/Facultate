@@ -104,7 +104,7 @@ namespace Harvest
                 }
                 else
                 {
-                    long amountEliminated = (long)(odds / 100 * numberOfHostiles);
+                    int amountEliminated = (int)(odds / 100 * numberOfHostiles);
 
                     PrintWithPause($"[{ChosenClass}] Engage: ", "Unsuccsseful");
                     Print($"[{ChosenClass}] The amount of hostiles eliminated: {amountEliminated}");
@@ -173,7 +173,7 @@ namespace Harvest
             }
         }
 
-        private void CalculateOdds(World.Target target)
+        private void CalculateOdds(Target target)
         {
             long result = 0;
             int damageDifference = ChosenClass.damageMax - ChosenClass.damageMin + 1;
@@ -210,7 +210,7 @@ namespace Harvest
             }
         }
 
-        private void GenerateScenario(World.Target target)
+        private void GenerateScenario(Target target)
         {
             int minNumberOfKM = 2, maxNumberOfKM = 25;
             int minNumberOfHostiles, maxNumberOfHostiles;
@@ -380,7 +380,7 @@ namespace Harvest
 
                     Print($"[{ChosenClass}] Hostile life forms: ");
 
-                    foreach (World.Target target in TargetWorld.Targets)
+                    foreach (Target target in TargetWorld.Targets)
                     {
                         Print($"[{ChosenClass}] {target}: {target.Amount}");
 
@@ -1228,7 +1228,7 @@ namespace Harvest
 
             time = 1250;
 
-            Thread.Sleep(time);
+            //Thread.Sleep(time);
 
             time = 5;
 
@@ -1245,7 +1245,7 @@ namespace Harvest
             {
                 Console.Write(message[i]);
 
-                Thread.Sleep(time);
+                //Thread.Sleep(time);
             }
 
             Console.Write("\n");
