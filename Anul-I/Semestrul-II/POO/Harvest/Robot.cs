@@ -1228,7 +1228,7 @@ namespace Harvest
 
             time = 1250;
 
-            //Thread.Sleep(time);
+            Thread.Sleep(time);
 
             time = 5;
 
@@ -1245,7 +1245,7 @@ namespace Harvest
             {
                 Console.Write(message[i]);
 
-                //Thread.Sleep(time);
+                Thread.Sleep(time);
             }
 
             Console.Write("\n");
