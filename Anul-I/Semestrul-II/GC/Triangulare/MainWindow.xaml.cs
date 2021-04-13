@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Triangulare
 {
@@ -21,7 +22,10 @@ namespace Triangulare
     /// </summary>
     public partial class MainWindow : Window
     {
+        Polygon removePolygon = new Polygon();
+
         List<Point> allPointsList = new List<Point>();
+        List<int> anglesDegrees = new List<int>();
 
         public MainWindow()
         {
@@ -49,7 +53,7 @@ namespace Triangulare
             myCanvas.Children.Add(myPolygon);
         }
 
-        private void Canvas_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Canvas_LeftMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ButtonState == MouseButtonState.Pressed)
             {
@@ -57,21 +61,31 @@ namespace Triangulare
 
                 allPointsList.Add(p);
 
-                DrawPoint(p);
+                DrawPoint(p, Brushes.DarkSlateGray, allPointsList.Count);
             }
         }
 
-        private void DrawPoint(Point p)
+        private void Canvas_RightMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Ellipse myPoint = new Ellipse()
+            if (e.ButtonState == MouseButtonState.Pressed)
             {
-                Margin = new Thickness(p.X - 3, p.Y - 3, 0, 0),
-                Fill = Brushes.Red,
-                Width = 6,
-                Height = 6
+                Point p = e.GetPosition(myCanvas);
+
+                removePolygon.Points.Remove(p);
+            }
+        }
+
+        private void DrawPoint(Point p, SolidColorBrush brush, int pos)
+        {
+            Ellipse myEllipse = new Ellipse()
+            {
+                Margin = new Thickness(p.X - 4, p.Y - 4, 0, 0),
+                Fill = brush,
+                Width = 8,
+                Height = 8
             };
 
-            myCanvas.Children.Add(myPoint);
+            myCanvas.Children.Insert(pos, myEllipse);
         }
 
         private void DrawPolygon_Click(object sender, RoutedEventArgs e)
@@ -79,8 +93,8 @@ namespace Triangulare
             Polygon myPolygon = new Polygon
             {
                 Stroke = Brushes.Black,
-                Fill = Brushes.LightBlue,
-                StrokeThickness = 1,
+                Fill = Brushes.SandyBrown,
+                StrokeThickness = 2,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -91,6 +105,8 @@ namespace Triangulare
             {
                 allPoints.Add(item);
             }
+
+            removePolygon.Points = allPoints;
 
             myPolygon.Points = allPoints;
 
@@ -104,8 +120,14 @@ namespace Triangulare
             Point point1 = new Point(), point2 = new Point(), point3 = new Point();
 
             List<Line> myLines = new List<Line>();
+            List<Point> triangulationPoints = allPointsList.ToList();
 
-            if (allPointsList.Count == 3)
+            foreach (var item in allPointsList)
+            {
+                anglesDegrees.Add(2);
+            }
+
+            if (triangulationPoints.Count == 3)
             {
                 done = true;
             }
@@ -119,7 +141,7 @@ namespace Triangulare
                 {
                     double angle;
 
-                    if (i > allPointsList.Count - 1)
+                    if (i > triangulationPoints.Count - 1)
                     {
                         done = true;
 
@@ -128,15 +150,15 @@ namespace Triangulare
 
                     if (i == 0)
                     {
-                        (point1, point2, point3) = (allPointsList[allPointsList.Count - 1], allPointsList[0], allPointsList[1]);
+                        (point1, point2, point3) = (triangulationPoints[triangulationPoints.Count - 1], triangulationPoints[0], triangulationPoints[1]);
                     }
-                    else if (i == allPointsList.Count - 1)
+                    else if (i == triangulationPoints.Count - 1)
                     {
-                        (point1, point2, point3) = (allPointsList[i - 1], allPointsList[i], allPointsList[0]);
+                        (point1, point2, point3) = (triangulationPoints[i - 1], triangulationPoints[i], triangulationPoints[0]);
                     }
                     else
                     {
-                        (point1, point2, point3) = (allPointsList[i - 1], allPointsList[i], allPointsList[i + 1]);
+                        (point1, point2, point3) = (triangulationPoints[i - 1], triangulationPoints[i], triangulationPoints[i + 1]);
                     }
 
                     angle = GetAngle(point1, point2, point3);
@@ -144,11 +166,10 @@ namespace Triangulare
                     if (angle < 180)
                     {
                         bool inside = false;
-                        double area = Area(point1, point2, point3), area1, area2, area3;
 
-                        for (int j = i + 2; j < allPointsList.Count - 1; j++)
+                        for (int j = i + 2; j < triangulationPoints.Count - 1; j++)
                         {
-                            if (IsPointOnTriangle(allPointsList[j], point1, point2, point3))
+                            if (IsPointOnTriangle(triangulationPoints[j], point1, point2, point3))
                             {
                                 inside = true;
 
@@ -158,36 +179,42 @@ namespace Triangulare
 
                         if (inside == false)
                         {
-                            for (int j = 0; j < i - 1; j++)
-                            {
-                                area1 = Area(allPointsList[j], point2, point3);
-                                area2 = Area(point1, allPointsList[j], point3);
-                                area3 = Area(point1, point2, allPointsList[j]);
-
-                                if (area1 + area2 + area3 == area)
-                                {
-                                    inside = true;
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (inside == false)
-                        {
                             found = true;
 
                             myLines.Add(new Line());
-                            myLines[myLines.Count - 1].Stroke = Brushes.Green;
+                            myLines[myLines.Count - 1].Stroke = Brushes.LightSkyBlue;
                             myLines[myLines.Count - 1].StrokeThickness = 2;
                             myLines[myLines.Count - 1].X1 = point1.X;
                             myLines[myLines.Count - 1].Y1 = point1.Y;
                             myLines[myLines.Count - 1].X2 = point3.X;
                             myLines[myLines.Count - 1].Y2 = point3.Y;
 
-                            allPointsList.RemoveAt(i);
+                            if (i == 0)
+                            {
+                                anglesDegrees[triangulationPoints.Count - 1 + allPointsList.Count - triangulationPoints.Count]++;
+                                anglesDegrees[allPointsList.Count - triangulationPoints.Count + 1]++;
+                            }
+                            else if (i == anglesDegrees.Count - 1)
+                            {
+                                anglesDegrees[triangulationPoints.Count - 2]++;
+                                anglesDegrees[allPointsList.Count - triangulationPoints.Count - 1]++;
+                            }
+                            else
+                            {
+                                anglesDegrees[allPointsList.Count - triangulationPoints.Count - 1]++;
+                                anglesDegrees[allPointsList.Count - triangulationPoints.Count + 1]++;
+                            }
+                            foreach (var item in anglesDegrees)
+                            {
+                                Test.Text += item + "$$$";
+                            }
+
+                            triangulationPoints.RemoveAt(i);
 
                             myCanvas.Children.Add(myLines[myLines.Count - 1]);
+
+                            Refresh();
+
                         }
                         else
                         {
@@ -200,7 +227,7 @@ namespace Triangulare
                     }
                 }
 
-                if (allPointsList.Count == 3)
+                if (triangulationPoints.Count == 3)
                 {
                     done = true;
                 }
@@ -245,7 +272,7 @@ namespace Triangulare
             double prod2 = p23.X * pp2.Y - p23.Y * pp2.X;
             double prod3 = p31.X * pp3.Y - p31.Y * pp3.X;
 
-            if (prod1 > 0 || prod2 > 0 || prod3 > 0)
+            if (prod1 < 0 || prod2 < 0 || prod3 < 0)
             {
                 return false;
             }
@@ -253,36 +280,102 @@ namespace Triangulare
             return true;
         }
 
-        private double Area(Point point1, Point point2, Point point3)
-        {
-            return Math.Abs((point1.X * (point2.Y - point3.Y) + point2.X * (point3.Y - point1.Y) + point3.X * (point1.Y - point2.Y)) / 2.0);
-        }
-
         private double GetAngle(Point point1, Point point2, Point point3)
         {
-            Point a = new Point()
-            {
-                X = point1.X - point2.X,
-                Y = point1.Y - point2.Y
-            };
+            double result = Math.Atan2(point1.Y - point2.Y, point1.X - point2.X) - Math.Atan2(point3.Y - point2.Y, point3.X - point2.X);
 
-            Point b = new Point()
-            {
-                X = point3.X - point2.X,
-                Y = point3.Y - point2.Y
-            };
+            result *= (180 / Math.PI);
 
-            double aLen = Math.Sqrt(a.X * a.X + a.Y * a.Y), bLen = Math.Sqrt(b.X * b.X + b.Y * b.Y);
-            double prod = a.X * b.X + a.Y * b.Y;
-
-            if (prod > 0)
+            if (result > 0)
             {
-                return (180 / Math.PI) * Math.Acos(prod / (aLen * bLen));
+                return result;
             }
             else
             {
-                return 360 - (180 / Math.PI) * Math.Acos(prod / (aLen * bLen));
-            }        
+                return 360 - Math.Abs(result);
+            }
+        }
+
+        private void Refresh()
+        {
+            Thread.Sleep(1000);
+
+            Action EmptyDelegate = delegate () { };
+
+            myCanvas.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
+        }
+
+        private void Coloring_Click(object sender, RoutedEventArgs e)
+        {
+            myCanvas.Children.RemoveRange(2, allPointsList.Count);
+
+            DrawPoint(allPointsList[0], Brushes.Red, 2);
+            DrawPoint(allPointsList[1], Brushes.LimeGreen, 3);
+
+            int helper1 = 1, helper2 = 2;
+
+            for (int i = 3; i < allPointsList.Count - 1; i++)
+            {
+                Test.Text += anglesDegrees[i - 2] + "###";
+                if (anglesDegrees[i - 2] % 2 == 0)
+                {
+                    if (helper1 == 1)
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.Red, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 1;
+                    }
+                    else if (helper1 == 2)
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.LimeGreen, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 2;
+                    }
+                    else
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.Blue, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 3;
+                    }
+                }
+                else
+                {
+                    if (6 - helper1 - helper2 == 1)
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.Red, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 1;
+                    }
+                    else if (6 - helper1 - helper2 == 2)
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.LimeGreen, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 2;
+                    }
+                    else
+                    {
+                        DrawPoint(allPointsList[i - 1], Brushes.Blue, i + 1);
+
+                        helper1 = helper2;
+                        helper2 = 3;
+                    }
+                }
+                Refresh();
+            }
+
+            //if (helper2 == 1)
+            //{
+            //    DrawPoint(allPointsList[allPointsList.Count - 2], Brushes.Red, allPointsList.Count);
+            //}
+            //else if (helper2 == 2)
+            //{
+            //    DrawPoint(allPointsList[allPointsList.Count - 2], Brushes.Red, allPointsList.Count);
+            //}
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
@@ -291,5 +384,7 @@ namespace Triangulare
 
             allPointsList = new List<Point>();
         }
+
+
     }
 }
