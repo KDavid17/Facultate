@@ -117,7 +117,7 @@ namespace Triangulare
         {
             bool done = false;
 
-            Point point1 = new Point(), point2 = new Point(), point3 = new Point();
+            Point point1 = new Point(), point2 = new Point(), point3 = new Point(), helper = new Point();
 
             List<Line> myLines = new List<Line>();
             List<Point> triangulationPoints = allPointsList.ToList();
@@ -131,6 +131,9 @@ namespace Triangulare
             {
                 done = true;
             }
+
+            helper.X = triangulationPoints[0].X;
+            helper.Y = triangulationPoints[0].Y;
 
             while (!done)
             {
@@ -163,13 +166,15 @@ namespace Triangulare
 
                     angle = GetAngle(point1, point2, point3);
 
-                    if (angle < 180)
+                    CoordsList.Items.Add(angle);
+
+                    if (angle < 180 && angle > -180)
                     {
                         bool inside = false;
 
                         for (int j = i + 2; j < triangulationPoints.Count - 1; j++)
                         {
-                            if (IsPointOnTriangle(triangulationPoints[j], point1, point2, point3))
+                            if (IsPointInTriangle(triangulationPoints[j], point1, point2, point3))
                             {
                                 inside = true;
 
@@ -191,6 +196,9 @@ namespace Triangulare
 
                             anglesDegrees[allPointsList.IndexOf(point1)]++;
                             anglesDegrees[allPointsList.IndexOf(point3)]++;
+
+                            helper.X = triangulationPoints[i].X;
+                            helper.Y = triangulationPoints[i].Y;
 
                             triangulationPoints.RemoveAt(i);
 
@@ -217,7 +225,7 @@ namespace Triangulare
             }
         }
 
-        private bool IsPointOnTriangle(Point point, Point point1, Point point2, Point point3)
+        private bool IsPointInTriangle(Point point, Point point1, Point point2, Point point3)
         {
             Point p12 = new Point()
             {
@@ -278,36 +286,24 @@ namespace Triangulare
         {
             double result;
 
-            if (allPointsList[0].X < allPointsList[1].X)
-            {
-                result = Math.Atan2(point1.Y - point2.Y, point1.X - point2.X) - Math.Atan2(point3.Y - point2.Y, point3.X - point2.X);
+            //result = Math.Atan2(point1.Y - point2.Y, point1.X - point2.X) - Math.Atan2(point3.Y - point2.Y, point3.X - point2.X);
 
-                result *= (180 / Math.PI);
+            //result *= (180 / Math.PI);
 
-                if (result > 0)
-                {
-                    return result;
-                }
-                else
-                {
-                    return 360 - Math.Abs(result);
-                }
-            }
-            else
-            {
-                result = Math.Atan2(point3.Y - point2.Y, point3.X - point2.X) - Math.Atan2(point1.Y - point2.Y, point1.X - point2.X);
+            //result = Math.PI - result;
+            //return result;
 
-                result *= (180 / Math.PI);
+            Point e1 = new Point();
+            Point e2 = new Point();
+            e1.X = point2.X - point1.X;
+            e1.Y = point2.Y - point1.Y;
 
-                if (result > 0)
-                {
-                    return result;
-                }
-                else
-                {
-                    return 360 - Math.Abs(result);
-                }
-            }
+            e2.X = point2.X - point3.X;
+            e2.Y = point2.Y - point3.Y;
+
+            result = Math.Atan2(e1.X * e1.Y - e2.Y * e2.X, e1.X * e2.X + e1.Y * e2.Y) * (180 / Math.PI);
+
+            return result;
         }
 
         private void Coloring_Click(object sender, RoutedEventArgs e)
@@ -372,7 +368,7 @@ namespace Triangulare
                 Refresh();
             }
         }
-        
+
         private void Refresh()
         {
             Thread.Sleep(1000);
@@ -381,7 +377,7 @@ namespace Triangulare
 
             myCanvas.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
         }
-        
+
         private void Area_Click(object sender, RoutedEventArgs e)
         {
             double prod1 = 0, prod2 = 0;
