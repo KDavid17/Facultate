@@ -24,6 +24,7 @@ namespace Triangulare
     {
         Polygon removePolygon = new Polygon();
 
+        List<Polygon> triangles = new List<Polygon>();
         List<Point> allPointsList = new List<Point>();
         List<int> anglesDegrees = new List<int>();
 
@@ -117,7 +118,7 @@ namespace Triangulare
         {
             bool done = false;
 
-            Point point1 = new Point(), point2 = new Point(), point3 = new Point(), helper = new Point();
+            Point point1, point2, point3;
 
             List<Line> myLines = new List<Line>();
             List<Point> triangulationPoints = allPointsList.ToList();
@@ -132,9 +133,6 @@ namespace Triangulare
                 done = true;
             }
 
-            helper.X = triangulationPoints[0].X;
-            helper.Y = triangulationPoints[0].Y;
-
             while (!done)
             {
                 bool found = false;
@@ -142,8 +140,6 @@ namespace Triangulare
 
                 while (!found)
                 {
-                    double angle;
-
                     if (i > triangulationPoints.Count - 1)
                     {
                         done = true;
@@ -164,17 +160,13 @@ namespace Triangulare
                         (point1, point2, point3) = (triangulationPoints[i - 1], triangulationPoints[i], triangulationPoints[i + 1]);
                     }
 
-                    angle = GetAngle(point1, point2, point3);
-
-                    CoordsList.Items.Add(angle);
-
-                    if (angle < 180 && angle > -180)
+                    if (!IsTriangleOrientedClockwise(point1, point2, point3))
                     {
                         bool inside = false;
 
                         for (int j = i + 2; j < triangulationPoints.Count - 1; j++)
                         {
-                            if (IsPointInTriangle(triangulationPoints[j], point1, point2, point3))
+                            if (IsPointInTriangle(point1, point2, point3, triangulationPoints[j]))
                             {
                                 inside = true;
 
@@ -197,10 +189,17 @@ namespace Triangulare
                             anglesDegrees[allPointsList.IndexOf(point1)]++;
                             anglesDegrees[allPointsList.IndexOf(point3)]++;
 
-                            helper.X = triangulationPoints[i].X;
-                            helper.Y = triangulationPoints[i].Y;
-
                             triangulationPoints.RemoveAt(i);
+
+                            PointCollection trianglePoints = new PointCollection
+                            {
+                                point1,
+                                point2,
+                                point3
+                            };
+
+                            triangles.Add(new Polygon());
+                            triangles[triangles.Count - 1].Points = trianglePoints;
 
                             myCanvas.Children.Add(myLines[myLines.Count - 1]);
 
@@ -220,90 +219,51 @@ namespace Triangulare
 
                 if (triangulationPoints.Count == 3)
                 {
+                    PointCollection trianglePoints = new PointCollection
+                            {
+                                new Point(triangulationPoints[0].X, triangulationPoints[0].Y),
+                                new Point(triangulationPoints[1].X, triangulationPoints[1].Y),
+                                new Point(triangulationPoints[2].X, triangulationPoints[2].Y),
+                            };
+
+                    triangles.Add(new Polygon());
+                    triangles[triangles.Count - 1].Points = trianglePoints;
+
                     done = true;
                 }
             }
         }
 
-        private bool IsPointInTriangle(Point point, Point point1, Point point2, Point point3)
+        public static bool IsPointInTriangle(Point p1, Point p2, Point p3, Point p)
         {
-            Point p12 = new Point()
-            {
-                X = point2.X - point1.X,
-                Y = point2.Y - point1.Y
-            };
-            Point p23 = new Point()
-            {
-                X = point3.X - point2.X,
-                Y = point3.Y - point2.Y
-            };
-            Point p31 = new Point()
-            {
-                X = point1.X - point3.X,
-                Y = point1.Y - point3.Y
-            };
+            bool isWithinTriangle = false;
 
-            Point pp1 = new Point()
-            {
-                X = point.X - point1.X,
-                Y = point.Y - point1.Y
-            };
-            Point pp2 = new Point()
-            {
-                X = point.X - point2.X,
-                Y = point.Y - point2.Y
-            };
-            Point pp3 = new Point()
-            {
-                X = point.X - point3.X,
-                Y = point.Y - point3.Y
-            };
+            double denominator = ((p2.Y - p3.Y) * (p1.X - p3.X) + (p3.X - p2.X) * (p1.Y - p3.Y));
 
-            double prod1 = p12.X * pp1.Y - p12.Y * pp1.X;
-            double prod2 = p23.X * pp2.Y - p23.Y * pp2.X;
-            double prod3 = p31.X * pp3.Y - p31.Y * pp3.X;
+            double a = ((p2.Y - p3.Y) * (p.X - p3.X) + (p3.X - p2.X) * (p.Y - p3.Y)) / denominator;
+            double b = ((p3.Y - p1.Y) * (p.X - p3.X) + (p1.X - p3.X) * (p.Y - p3.Y)) / denominator;
+            double c = 1 - a - b;
 
-            if (allPointsList[0].X < allPointsList[1].X)
+            if (a > 0 && a < 1 && b > 0 && b < 1 && c > 0 && c < 1)
             {
-                if (prod1 < 0 || prod2 < 0 || prod3 < 0)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (prod1 > 0 || prod2 > 0 || prod3 > 0)
-                {
-                    return false;
-                }
+                isWithinTriangle = true;
             }
 
-
-            return true;
+            return isWithinTriangle;
         }
 
-        private double GetAngle(Point point1, Point point2, Point point3)
+        public bool IsTriangleOrientedClockwise(Point p1, Point p2, Point p3)
         {
-            double result;
+            bool isClockWise = true;
 
-            //result = Math.Atan2(point1.Y - point2.Y, point1.X - point2.X) - Math.Atan2(point3.Y - point2.Y, point3.X - point2.X);
+            double determinant = p1.X * p2.Y + p3.X * p1.Y + p2.X * p3.Y - p1.X * p3.Y - p3.X * p2.Y - p2.X * p1.Y;
 
-            //result *= (180 / Math.PI);
+            if (determinant > 0)
+            {
+                isClockWise = false;
+            }
 
-            //result = Math.PI - result;
-            //return result;
-
-            Point e1 = new Point();
-            Point e2 = new Point();
-            e1.X = point2.X - point1.X;
-            e1.Y = point2.Y - point1.Y;
-
-            e2.X = point2.X - point3.X;
-            e2.Y = point2.Y - point3.Y;
-
-            result = Math.Atan2(e1.X * e1.Y - e2.Y * e2.X, e1.X * e2.X + e1.Y * e2.Y) * (180 / Math.PI);
-
-            return result;
+            return isClockWise;
         }
 
         private void Coloring_Click(object sender, RoutedEventArgs e)
@@ -395,6 +355,55 @@ namespace Triangulare
             AreaText.Text += Math.Abs((prod1 - prod2) / 2);
         }
 
+        private void DualTree_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < triangles.Count - 1; i++)
+            {
+                for (int j = i + 1; j < triangles.Count; j++)
+                {
+                    int s = 0;
+                    
+                    for (int k = 0; k < 3; k++)
+                    {
+                        for (int z = 0; z < 3; z++)
+                        {
+                            if (triangles[i].Points[k] == triangles[j].Points[z])
+                            {
+                                s++;
+                            }
+                        }
+                    }
+
+                    if (s == 2)
+                    {
+                        Point p1 = new Point((triangles[i].Points[0].X + triangles[i].Points[1].X + triangles[i].Points[2].X) / 3,
+                                        (triangles[i].Points[0].Y + triangles[i].Points[1].Y + triangles[i].Points[2].Y) / 3);
+                        DrawPoint(p1, Brushes.Purple);
+
+                        Refresh();
+
+                        Point p2 = new Point((triangles[j].Points[0].X + triangles[j].Points[1].X + triangles[j].Points[2].X) / 3,
+                                        (triangles[j].Points[0].Y + triangles[j].Points[1].Y + triangles[j].Points[2].Y) / 3);
+                        DrawPoint(p2, Brushes.Purple);
+
+                        Refresh();
+
+                        Line tempLine = new Line()
+                        {
+                            Stroke = Brushes.Purple,
+                            StrokeThickness = 2,
+                            X1 = p1.X,
+                            Y1 = p1.Y,
+                            X2 = p2.X,
+                            Y2 = p2.Y
+                        };
+
+                        myCanvas.Children.Add(tempLine);
+                    }
+                }
+            }
+        }
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             myCanvas.Children.RemoveRange(1, myCanvas.Children.Count - 1);
@@ -402,6 +411,8 @@ namespace Triangulare
             anglesDegrees = new List<int>();
 
             allPointsList = new List<Point>();
+
+            triangles = new List<Polygon>();
 
             AreaText.Text = "";
 

@@ -23,11 +23,12 @@
             <Button x:Name="Triangulate" Content="Triangulate" Margin="10,25,10,0" Click="Triangulate_Click" Height="40" FontSize="16"/>
             <Button x:Name="Coloring" Content="3 - Coloring" Margin="10,25,10,0" Click="Coloring_Click" Height="40" FontSize="16"/>
             <Button x:Name="Area" Content="Area" Height="40" Margin="10,25,10,0" FontSize="16" Click="Area_Click"/>
+            <Button x:Name="DualTree" Content="Dual Tree" Height="40" Margin="10,25,10,0" FontSize="16" Click="DualTree_Click"/>
             <Button x:Name="Clear" Content="Clear" Margin="10,25,10,0" Click="Clear_Click" Height="40" FontSize="16"/>
             <Label Content="Polygon's Area:" Margin="10,25,10,0" Height="40" FontSize="20" HorizontalAlignment="Center" Background="{x:Null}"/>
             <TextBlock x:Name="AreaText" TextWrapping="Wrap" FontSize="20" Margin="0,5,0,0" HorizontalAlignment="Center" Height="40" Width="198"/>
             <Label Content="Polygon's Coordinates:" Height="39" HorizontalAlignment="Center" Margin="0,25,0,0" FontSize="20"/>
-            <ListBox x:Name="CoordsList" Height="320" HorizontalAlignment="Center" VerticalAlignment="Center" Width="198"/>
+            <ListBox x:Name="CoordsList" Height="202" HorizontalAlignment="Center" VerticalAlignment="Center" Width="198" Margin="10,0"/>
         </StackPanel>
     </Grid>
 </Window>
