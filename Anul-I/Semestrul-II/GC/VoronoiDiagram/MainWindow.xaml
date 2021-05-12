@@ -1,0 +1,22 @@
+﻿<Window x:Class="VoronoiDiagram.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VoronoiDiagram"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="900">
+    <Grid>
+        <Canvas x:Name="myCanvas" HorizontalAlignment="Left" Height="500" VerticalAlignment="Top" Width="600" Margin="10,10,0,0"/>
+        <Grid Height="500" Canvas.Left="620" Margin="632,30,10,39">
+            <Button x:Name="RandomPoints" Content="Draw random Points" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Width="230" Height="40" Click="RandomPoints_Click" FontSize="16"/>
+            <TextBlock x:Name="NumberOfPoints" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Number of points:" VerticalAlignment="Top" Height="26" Width="133" FontSize="16" Margin="26,0,0,0"/>
+            <TextBox x:Name="NumberOfRandomPoints" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="71" Margin="159,0,0,0" FontSize="16"/>
+            <Button x:Name="EuclideanVoronoi" Content="Voronoi diagram - Euclidean" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,114,0,0" FontSize="16" Height="40" Click="EuclideanVoronoi_Click"/>
+            <Button x:Name="ManhattanVoronoi" Content="Voronoi diagram - Manhattan" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,159,0,0" Height="40" FontSize="16" Click="ManhattanVoronoi_Click"/>
+            <Button x:Name="ChebyshevVoronoi" Content="Voronoi diagram - Chebyshev" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,204,0,0" Height="40" FontSize="16" Click="ChebyshevVoronoi_Click"/>
+            <Button x:Name="Clear" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,290,0,0" FontSize="16" Height="40" Click="Clear_Click"/>
+        </Grid>
+        <ProgressBar x:Name="Bar" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="600" Margin="10,532,0,0"/>
+    </Grid>
+</Window>

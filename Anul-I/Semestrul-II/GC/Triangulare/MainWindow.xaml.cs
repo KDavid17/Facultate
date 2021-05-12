@@ -24,6 +24,7 @@ namespace Triangulare
     {
         Polygon removePolygon = new Polygon();
 
+        List<Line> lines = new List<Line>();
         List<Polygon> triangles = new List<Polygon>();
         List<Point> allPointsList = new List<Point>();
         List<int> anglesDegrees = new List<int>();
@@ -202,6 +203,7 @@ namespace Triangulare
                             triangles[triangles.Count - 1].Points = trianglePoints;
 
                             myCanvas.Children.Add(myLines[myLines.Count - 1]);
+                            lines.Add(myLines[myLines.Count - 1]);
 
                             Refresh();
 
@@ -277,6 +279,7 @@ namespace Triangulare
 
             for (int i = 1; i < allPointsList.Count - 1; i++)
             {
+                CoordsList.Items.Add(anglesDegrees[i]);
                 if (anglesDegrees[i] % 2 != 0)
                 {
                     if (pointBehind2 == 1)
@@ -340,6 +343,11 @@ namespace Triangulare
 
         private void Area_Click(object sender, RoutedEventArgs e)
         {
+
+            // (1, 2)
+            // (2, 3)
+            // (5, 6) 
+            // (6, 8)
             double prod1 = 0, prod2 = 0;
 
             for (int i = 0; i < allPointsList.Count - 1; i++)
@@ -362,7 +370,7 @@ namespace Triangulare
                 for (int j = i + 1; j < triangles.Count; j++)
                 {
                     int s = 0;
-                    
+
                     for (int k = 0; k < 3; k++)
                     {
                         for (int z = 0; z < 3; z++)
@@ -414,9 +422,109 @@ namespace Triangulare
 
             triangles = new List<Polygon>();
 
+            lines = new List<Line>();
+
             AreaText.Text = "";
 
             CoordsList.Items.Clear();
+        }
+
+        private void Angle_Click(object sender, RoutedEventArgs e)
+        {
+            int i;
+
+            Point p1, p2, p3, p4, p5, p6;
+
+            int helper = 0;
+
+            for (i = 0; i < lines.Count; i++)
+            {
+                int firstIndex = allPointsList.IndexOf(new Point(lines[i].X1, lines[i].Y1)), secondIndex = allPointsList.IndexOf(new Point(lines[i].X2, lines[i].Y2));
+
+                if (firstIndex == 0)
+                {
+                    p1 = allPointsList[allPointsList.Count - 1];
+                    p2 = allPointsList[0];
+                    p3 = allPointsList[1];
+
+                    p4 = allPointsList[secondIndex - 1];
+                    p5 = allPointsList[secondIndex];
+                    p6 = allPointsList[secondIndex + 1];
+                }
+                else if (firstIndex == allPointsList.Count - 1)
+                {
+                    p1 = allPointsList[allPointsList.Count - 2];
+                    p2 = allPointsList[allPointsList.Count - 1];
+                    p3 = allPointsList[0];
+
+                    p4 = allPointsList[secondIndex - 1];
+                    p5 = allPointsList[secondIndex];
+                    p6 = allPointsList[secondIndex + 1];
+                }
+                else if (secondIndex == 0)
+                {
+                    p1 = allPointsList[firstIndex - 1];
+                    p2 = allPointsList[firstIndex];
+                    p3 = allPointsList[firstIndex + 1];
+
+
+                    p4 = allPointsList[allPointsList.Count - 1];
+                    p5 = allPointsList[0];
+                    p6 = allPointsList[1];
+                }
+                else if (secondIndex == allPointsList.Count - 1)
+                {
+                    p1 = allPointsList[firstIndex - 1];
+                    p2 = allPointsList[firstIndex];
+                    p3 = allPointsList[firstIndex + 1];
+
+                    p4 = allPointsList[allPointsList.Count - 2];
+                    p5 = allPointsList[allPointsList.Count - 1];
+                    p6 = allPointsList[0];
+                }
+                else
+                {
+                    p1 = allPointsList[firstIndex - 1];
+                    p2 = allPointsList[firstIndex];
+                    p3 = allPointsList[firstIndex + 1];
+
+                    p4 = allPointsList[secondIndex - 1];
+                    p5 = allPointsList[secondIndex];
+                    p6 = allPointsList[secondIndex + 1];
+                }
+
+                if (CheckAngle(p1, p2, p3) && CheckAngle(p4, p5, p6))
+                {
+                    myCanvas.Children.RemoveAt(allPointsList.Count + 2 + helper);
+
+                    Refresh();
+                }
+                else
+                {
+                    helper++;
+                }
+            }
+        }
+
+        private bool CheckAngle(Point p1, Point p2, Point p3)
+        {
+            double result;
+
+            result = (Math.Atan2(p1.Y - p2.Y, p1.X - p2.X) - Math.Atan2(p3.Y - p2.Y, p3.X - p2.X)) * (180 / Math.PI);
+
+            if (result < 0)
+            {
+                result = 360 + result;
+            }
+
+            if (result > 180)
+            {
+                return false;
+            }
+
+            CoordsList.Items.Add(result);
+
+            return true;
         }
     }
 }
