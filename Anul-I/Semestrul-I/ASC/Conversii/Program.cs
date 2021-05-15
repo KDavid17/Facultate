@@ -315,6 +315,7 @@ namespace Conversii
             } while (Date == false);
 
             Prelucrare(Numar_Initial, Baza_1, Baza_2);                                // Apelarea functiei in scopul prelucrarii datelor (Linia 205).
+            Console.ReadKey();
         }
     }
 }

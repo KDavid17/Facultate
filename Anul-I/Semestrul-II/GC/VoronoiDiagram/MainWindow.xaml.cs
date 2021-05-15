@@ -21,6 +21,7 @@ namespace VoronoiDiagram
     {
         List<Color> myPointsColor = new List<Color>();
         List<Point> myPoints = new List<Point>();
+        List<int> positions = new List<int>();
 
         int colorIndex = 0;
         public MainWindow()
@@ -72,6 +73,10 @@ namespace VoronoiDiagram
 
                 colorIndex++;
             }
+
+            myPoints.OrderBy(p => p.X).ThenBy(p => p.Y);
+
+            Bar.Maximum = myCanvas.Height;
         }
         
         private void EuclideanVoronoi_Click(object sender, RoutedEventArgs e)
@@ -80,7 +85,7 @@ namespace VoronoiDiagram
             {
                 for (int j = 1; j < myCanvas.Width; j++)
                 {
-                    double distanceMin = 50000, distance;
+                    double distanceMin = myCanvas.Width * myCanvas.Height, distance;
                     int pos = 0;
 
                     for (int k = 0; k < myPoints.Count; k++)
@@ -92,15 +97,24 @@ namespace VoronoiDiagram
                             pos = k;
                         }
                     }
+                    
+                    //DrawPoint(new Point(j, i), 1, myPointsColor[pos]);
 
-                    DrawPoint(new Point(j, i), 2, myPointsColor[pos]);    
+                    positions.Add(pos);
+
+                    if (positions.Count > myCanvas.Width && (positions[positions.Count - 2] != pos || positions[positions.Count - 1 - (int)myCanvas.Width] != pos))
+                    {
+                        DrawPoint(new Point(j, i), 1, Colors.Black);
+                    }
                 }
 
                 if (i % 5 == 0)
                 {
-                    Bar.Dispatcher.Invoke(() => Bar.Value = i / 5 + 1, DispatcherPriority.Background);
+                    Bar.Dispatcher.Invoke(() => Bar.Value = i, DispatcherPriority.Background);
                 }   
             }
+
+            Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
         
         private void ManhattanVoronoi_Click(object sender, RoutedEventArgs e)
@@ -109,7 +123,7 @@ namespace VoronoiDiagram
             {
                 for (int j = 1; j < myCanvas.Width; j++)
                 {
-                    double distanceMin = 50000, distance;
+                    double distanceMin = myCanvas.Width * myCanvas.Height, distance;
                     int pos = 0;
 
                     for (int k = 0; k < myPoints.Count; k++)
@@ -122,14 +136,16 @@ namespace VoronoiDiagram
                         }
                     }
 
-                    DrawPoint(new Point(j, i), 2, myPointsColor[pos]);
+                    DrawPoint(new Point(j, i), 1, myPointsColor[pos]);
                 }
 
                 if (i % 5 == 0)
                 {
-                    Bar.Dispatcher.Invoke(() => Bar.Value = i / 5 + 1, DispatcherPriority.Background);
+                    Bar.Dispatcher.Invoke(() => Bar.Value = i, DispatcherPriority.Background);
                 }
             }
+
+            Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
         
         private void ChebyshevVoronoi_Click(object sender, RoutedEventArgs e)
@@ -138,7 +154,7 @@ namespace VoronoiDiagram
             {
                 for (int j = 1; j < myCanvas.Width; j++)
                 {
-                    double distanceMin = 50000, distance;
+                    double distanceMin = myCanvas.Width * myCanvas.Height, distance;
                     int pos = 0;
 
                     for (int k = 0; k < myPoints.Count; k++)
@@ -151,14 +167,16 @@ namespace VoronoiDiagram
                         }
                     }
 
-                    DrawPoint(new Point(j, i), 2, myPointsColor[pos]);
+                    DrawPoint(new Point(j, i), 1, myPointsColor[pos]);
                 }
 
                 if (i % 5 == 0)
                 {
-                    Bar.Dispatcher.Invoke(() => Bar.Value = i / 5 + 1, DispatcherPriority.Background);
+                    Bar.Dispatcher.Invoke(() => Bar.Value = i, DispatcherPriority.Background);
                 }
             }
+
+            Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
         
         private void Clear_Click(object sender, RoutedEventArgs e)
