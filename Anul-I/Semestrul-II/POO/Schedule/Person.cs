@@ -8,9 +8,10 @@ namespace Schedule
 {
     public class Person
     {
-        public string Name { get; private set; }
-        public string Surname { get; private set; }
-        public List<Agenda> ListOfAgendas { get; private set; }
+        private List<Agenda> listOfAgendas = new List<Agenda>();
+
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
 
         private Person()
         {
@@ -19,10 +20,33 @@ namespace Schedule
 
         public Person(string firstName, string lastName)
         {
-            this.Name = firstName;
-            this.Surname = lastName;
+            this.FirstName = firstName;
+            this.LastName = lastName;
         }
 
+        public void AddAgenda(string name)
+        {
+            listOfAgendas.Add(new Agenda(name));
+        }
 
+        public Agenda GetAgenda(int index)
+        {
+            return listOfAgendas[index];
+        }
+
+        public int GetNumberOfAgendas()
+        {
+            return listOfAgendas.Count;
+        }
+
+        public void DeleteAgenda(int index)
+        {
+            listOfAgendas.RemoveAt(index);
+        }
+
+        public override string ToString()
+        {
+            return FirstName + " " + LastName;
+        }
     }
 }
