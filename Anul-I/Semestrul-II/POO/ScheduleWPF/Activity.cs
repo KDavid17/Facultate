@@ -8,6 +8,8 @@ namespace ScheduleWPF
 {
     public class Activity
     {
+        private readonly List<Person> listOfPersons = new List<Person>();
+
         public string Name { get; private set; }
         public string Description { get; private set; }
         public DateAndTime TimeStart { get; private set; }

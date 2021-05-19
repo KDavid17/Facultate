@@ -49,19 +49,24 @@ namespace ScheduleWPF
 
             ChangeElementsVisibility(Visibility.Hidden);
 
+            MyListOfParticipants.IsEnabled = false;
+
             BoxAgendaName.IsReadOnly = true;
             BoxActivityName.IsReadOnly = true;
             BoxActivityDescription.IsReadOnly = true;
             BoxActivityDateStart.IsReadOnly = true;
             BoxActivityDateEnd.IsReadOnly = true;
-            BoxParticipantsName.IsReadOnly = true;
+            BoxParticipantsEMails.IsReadOnly = true;
         }
 
-        private void AddPerson_Click(object sender, RoutedEventArgs e)
+        private void ButtonAddPerson_Click(object sender, RoutedEventArgs e)
         {
-            if (FirstName.Text != "" && LastName.Text != "")
+            if (FirstName.Text != "" && LastName.Text != "" && EMail.Text != "")
             {
-                MyListOfPersons.Items.Add(new Person(FirstName.Text, LastName.Text));
+                MyListOfPersons.Items.Add(new Person(FirstName.Text, LastName.Text, EMail.Text));
+
+                FirstName.Text = "";
+                LastName.Text = "";
             }
         }
         private void ButtonAddAgenda_Click(object sender, RoutedEventArgs e)
@@ -73,14 +78,46 @@ namespace ScheduleWPF
                 helper.AddAgenda(BoxAgendaName.Text);
 
                 MyListOfAgendas.Items.Add(helper.GetAgenda(helper.GetNumberOfAgendas() - 1));
+            }
 
-                BoxAgendaName.Text = "";
+            BoxAgendaName.Text = "";
+            BoxParticipantsEMails.Text = "";
+        }
+        private void ButtonAddParticipants_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: Repair the program because it does not update the other agendas
+            if (BoxParticipantsEMails.Text != "" && MyListOfAgendas.SelectedItem != null)
+            {
+                List<Person> tempListOfParticipants = new List<Person>();
+
+                Person helper = (Person)MyListOfPersons.SelectedItem;
+
+                string stringHelper = BoxParticipantsEMails.Text;
+
+                stringHelper = helper.EMail + "," + stringHelper.Replace(" ", "");
+
+                string[] stringEMails = stringHelper.Split(',');
+
+                foreach (Person item in MyListOfPersons.Items)
+                {
+                    if (stringEMails.Contains(item.EMail))
+                    {
+                        tempListOfParticipants.Add(item);
+                    }
+                }
+
+                foreach (Person item in tempListOfParticipants)
+                {
+                    item.AddParticipants(MyListOfAgendas.SelectedItem.ToString(), tempListOfParticipants);
+
+                    MyListOfParticipants.Items.Add(item);
+                }
             }
         }
 
         private void ButtonAddActivity_Click(object sender, RoutedEventArgs e)
         {
-            if (BoxActivityName.Text != "")
+            if (BoxActivityName.Text != "" && BoxActivityDescription.Text != "" && BoxActivityDateStart.Text != "" && BoxActivityDateEnd.Text != "")
             {
                 Agenda helper = (Agenda)MyListOfAgendas.SelectedItem;
 
@@ -95,11 +132,6 @@ namespace ScheduleWPF
             }
         }
 
-        private void ButtonAddParticipants_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void MyListOfPersons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MyListOfAgendas.ReleaseAllTouchCaptures();
@@ -109,30 +141,22 @@ namespace ScheduleWPF
             MyListOfParticipants.Items.Clear();
 
             BoxAgendaName.Text = "";
+            BoxParticipantsEMails.Text = "";
             BoxActivityName.Text = "";
             BoxActivityDescription.Text = "";
             BoxActivityDateStart.Text = "";
             BoxActivityDateEnd.Text = "";
-            BoxParticipantsName.Text = "";
 
             BoxAgendaName.IsReadOnly = false;
+            BoxParticipantsEMails.IsReadOnly = false;
             BoxActivityName.IsReadOnly = true;
             BoxActivityDescription.IsReadOnly = true;
             BoxActivityDateStart.IsReadOnly = true;
             BoxActivityDateEnd.IsReadOnly = true;
-            BoxParticipantsName.IsReadOnly = true;
 
             Person helper;
 
-            if (e.AddedItems[0] == null)
-            {
-                helper = (Person)e.RemovedItems[0];
-            }
-            else
-            {
-                helper = (Person)e.AddedItems[0];
-            }
-
+            helper = (Person)e.AddedItems[0];
 
             foreach (Person item in MyListOfPersons.Items)
             {
@@ -162,20 +186,20 @@ namespace ScheduleWPF
             BoxActivityDescription.Text = "";
             BoxActivityDateStart.Text = "";
             BoxActivityDateEnd.Text = "";
-            BoxParticipantsName.Text = "";
+            BoxParticipantsEMails.Text = "";
 
             BoxAgendaName.IsReadOnly = true;
+            BoxParticipantsEMails.IsReadOnly = false;
             BoxActivityName.IsReadOnly = false;
             BoxActivityDescription.IsReadOnly = false;
             BoxActivityDateStart.IsReadOnly = false;
             BoxActivityDateEnd.IsReadOnly = false;
-            BoxParticipantsName.IsReadOnly = true;
 
-            Agenda helper;
-
-            if (e.AddedItems[0] != null)
+            if (e.AddedItems.Count == 1)
             {
-                
+                Agenda helper;
+
+                helper = (Agenda)e.AddedItems[0];
 
                 foreach (Agenda item in MyListOfAgendas.Items)
                 {
@@ -183,7 +207,12 @@ namespace ScheduleWPF
                     {
                         for (int i = 0; i < item.GetNumberOfActivities(); i++)
                         {
-                            MyListOfAgendas.Items.Add(item.GetActivity(i));
+                            MyListOfActivities.Items.Add(item.GetActivity(i));
+                        }
+
+                        for (int i = 0; i < item.GetNumberOfParticipants(); i++)
+                        {
+                            MyListOfParticipants.Items.Add(item.GetParticipant(i));
                         }
                     }
                 }
@@ -192,30 +221,33 @@ namespace ScheduleWPF
 
         private void MyListOfActivities_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            MyListOfParticipants.Items.Clear();
 
-        }
+            BoxParticipantsEMails.Text = "";
 
-        private void MyListOfParticipants_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
+            BoxAgendaName.IsReadOnly = true;
+            BoxActivityName.IsReadOnly = true;
+            BoxActivityDescription.IsReadOnly = true;
+            BoxActivityDateStart.IsReadOnly = true;
+            BoxActivityDateEnd.IsReadOnly = true;
+            BoxParticipantsEMails.IsReadOnly = false;
         }
 
         private void ChangeElementsVisibility(Visibility v)
         {
             TextAgendaName.Visibility = v;
             TextActivityName.Visibility = v;
-            TextParticipantsName.Visibility = v;
+            TextParticipantsEMails.Visibility = v;
 
             BoxAgendaName.Visibility = v;
             BoxActivityName.Visibility = v;
             BoxActivityDescription.Visibility = v;
             BoxActivityDateStart.Visibility = v;
             BoxActivityDateEnd.Visibility = v;
-            BoxParticipantsName.Visibility = v;
+            BoxParticipantsEMails.Visibility = v;
 
             ButtonAddAgenda.Visibility = v;
             ButtonAddActivity.Visibility = v;
-            ButtonAddParticipants.Visibility = v;
 
             TextAgendas.Visibility = v;
             TextActivites.Visibility = v;

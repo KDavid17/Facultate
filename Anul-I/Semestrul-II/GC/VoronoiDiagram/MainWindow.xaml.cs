@@ -22,8 +22,9 @@ namespace VoronoiDiagram
         List<Color> myPointsColor = new List<Color>();
         List<Point> myPoints = new List<Point>();
         List<int> positions = new List<int>();
+        Point p1 = new Point();
+        Point p2 = new Point();
 
-        int colorIndex = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -56,11 +57,6 @@ namespace VoronoiDiagram
 
             for (int i = 0; i < int.Parse(NumberOfRandomPoints.Text); i++)
             {
-                if (colorIndex == 7)
-                {
-                    colorIndex = 0;
-                }
-
                 Point p = new Point(rnd.Next(1, (int)(myCanvas.Width)), rnd.Next(1, (int)(myCanvas.Height)));
 
                 Color color = Color.FromRgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
@@ -70,17 +66,15 @@ namespace VoronoiDiagram
                 myPointsColor.Add(color);
 
                 myPoints.Add(p);
-
-                colorIndex++;
             }
-
-            myPoints.OrderBy(p => p.X).ThenBy(p => p.Y);
 
             Bar.Maximum = myCanvas.Height;
         }
-        
+
         private void EuclideanVoronoi_Click(object sender, RoutedEventArgs e)
         {
+            Point helper = new Point();
+
             for (int i = 1; i < myCanvas.Height; i++)
             {
                 for (int j = 1; j < myCanvas.Width; j++)
@@ -97,7 +91,14 @@ namespace VoronoiDiagram
                             pos = k;
                         }
                     }
-                    
+
+                    if (i == p1.Y && j == p1.X)
+                    {
+                        p2 = myPoints[pos];
+
+                        Distance.Text = distanceMin.ToString();
+                    }
+
                     //DrawPoint(new Point(j, i), 1, myPointsColor[pos]);
 
                     positions.Add(pos);
@@ -111,12 +112,12 @@ namespace VoronoiDiagram
                 if (i % 5 == 0)
                 {
                     Bar.Dispatcher.Invoke(() => Bar.Value = i, DispatcherPriority.Background);
-                }   
+                }
             }
 
             Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
-        
+
         private void ManhattanVoronoi_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 1; i < myCanvas.Height; i++)
@@ -147,7 +148,7 @@ namespace VoronoiDiagram
 
             Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
-        
+
         private void ChebyshevVoronoi_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 1; i < myCanvas.Height; i++)
@@ -178,7 +179,7 @@ namespace VoronoiDiagram
 
             Bar.Dispatcher.Invoke(() => Bar.Value = myCanvas.Height, DispatcherPriority.Background);
         }
-        
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             myCanvas.Children.RemoveRange(1, myCanvas.Children.Count - 1);
@@ -208,6 +209,35 @@ namespace VoronoiDiagram
             Action EmptyDelegate = delegate () { };
 
             myCanvas.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
+        }
+
+        private void AddPoint_Click(object sender, RoutedEventArgs e)
+        {
+            Random rnd = new Random();
+
+            Point p = new Point(double.Parse(BoxX.Text), double.Parse(BoxY.Text));
+
+            p1 = p;
+
+            Color color = Color.FromRgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
+
+            DrawPoint(p, 4, color);
+        }
+
+        private void FindDistance_Click(object sender, RoutedEventArgs e)
+        {
+            Line myLine = new Line()
+            {
+                X1 = p1.X,
+                Y1 = p1.Y,
+                X2 = p2.X,
+                Y2 = p2.Y,
+                StrokeThickness = 2,
+                Stroke = Brushes.Red,
+                Fill = Brushes.Red
+            };
+            NumberOfRandomPoints.Text = $"{myLine.X1} + {myLine.X2} + {myLine.Y1} + {myLine.Y2}";
+            myCanvas.Children.Add(myLine);
         }
     }
 }

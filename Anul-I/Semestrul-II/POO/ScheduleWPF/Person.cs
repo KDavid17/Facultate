@@ -8,25 +8,34 @@ namespace ScheduleWPF
 {
     public class Person
     {
-        private List<Agenda> listOfAgendas = new List<Agenda>();
+        private readonly List<Agenda> listOfAgendas = new List<Agenda>();
 
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
+        public string EMail { get; private set; }
 
         private Person()
         {
 
         }
 
-        public Person(string firstName, string lastName)
+        public Person(string firstName, string lastName, string eMail)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
+            this.EMail = eMail;
         }
 
         public void AddAgenda(string name)
         {
             listOfAgendas.Add(new Agenda(name));
+        }
+
+        public void AddParticipants(string name, List<Person> tempListOfParticipants)
+        {
+            AddAgenda(name);
+
+            GetAgenda(GetNumberOfAgendas() - 1).SetParticipants(tempListOfParticipants);
         }
 
         public Agenda GetAgenda(int index)
@@ -46,7 +55,7 @@ namespace ScheduleWPF
 
         public override string ToString()
         {
-            return FirstName + " " + LastName;
+            return FirstName + " " + LastName + " " + EMail;
         }
     }
 }
