@@ -7,34 +7,37 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
     <Grid>
-        <ListBox x:Name="MyListOfPersons" HorizontalAlignment="Left" Height="239" VerticalAlignment="Top" Width="205" Margin="10,154,0,0" SelectionChanged="MyListOfPersons_SelectionChanged"/>
-        <Button x:Name="AddPerson" Content="Add Person" HorizontalAlignment="Left" VerticalAlignment="Top" Width="205" Margin="10,124,0,0" FontSize="16" Click="ButtonAddPerson_Click"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="First Name:" VerticalAlignment="Top" Margin="10,31,0,0" Height="20" Width="80" FontSize="16"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Last Name:" VerticalAlignment="Top" Margin="10,56,0,0" Width="80" Height="20" FontSize="16"/>
         <TextBox x:Name="FirstName" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="95,31,0,0" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Last Name:" VerticalAlignment="Top" Margin="10,56,0,0" Width="80" Height="20" FontSize="16"/>
         <TextBox x:Name="LastName" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="95,56,0,0" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="E-Mail:" VerticalAlignment="Top" Margin="10,81,0,0" Height="20" Width="50" FontSize="16"/>
+        <TextBox x:Name="EMail" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="155" Margin="60,81,0,0" FontSize="16"/>
+        <Button x:Name="AddPerson" Content="Add Person" HorizontalAlignment="Left" VerticalAlignment="Top" Width="205" Margin="10,124,0,0" FontSize="16" Click="ButtonAddPerson_Click"/>
+        <ListBox x:Name="MyListOfPersons" HorizontalAlignment="Left" Height="239" VerticalAlignment="Top" Width="205" Margin="10,154,0,0" SelectionChanged="MyListOfPersons_SelectionChanged"/>
         <Canvas x:Name="MyCanvas" HorizontalAlignment="Left" Height="549" VerticalAlignment="Top" Width="562" Margin="220,10,0,0">
             <TextBlock x:Name="PersonName" TextWrapping="Wrap" Canvas.Left="150" Canvas.Top="10" FontSize="16" Height="25" Width="300" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <TextBlock x:Name="TextAgendaName" TextWrapping="Wrap" Text="Name of the Agenda:" Canvas.Left="10" Canvas.Top="51" Height="20" Width="140" FontSize="14"/>
             <TextBox x:Name="BoxAgendaName" Height="25" TextWrapping="Wrap" Width="444" Canvas.Left="10" Canvas.Top="76" FontSize="14"/>
+            <Button x:Name="ButtonAddAgenda" Content="Add Agenda" Width="103" Canvas.Left="459" Canvas.Top="76" Height="25" Click="ButtonAddAgenda_Click"/>
             <TextBlock x:Name="TextParticipantsEMails" TextWrapping="Wrap" Text="E-Mail(s) of the Participant(s):" Canvas.Top="103" Height="20" FontSize="14" Canvas.Left="10"/>
             <TextBox x:Name="BoxParticipantsEMails" Height="25" TextWrapping="Wrap" Width="444" Canvas.Left="10" Canvas.Top="128"/>
-            <Button x:Name="ButtonAddAgenda" Content="Add Agenda" Width="103" Canvas.Left="459" Canvas.Top="76" Height="25" Click="ButtonAddAgenda_Click"/>
+            <Button x:Name="ButtonAddParticipants" Content="Add Participants" Width="103" Canvas.Left="459" Canvas.Top="128" Height="25" Click="ButtonAddParticipants_Click"/>
             <TextBlock x:Name="TextActivityName" TextWrapping="Wrap" Text="Activity Name, Description, DateStart, DateEnd:" Canvas.Left="10" Canvas.Top="161" FontSize="14" Height="20" Width="290"/>
             <TextBox x:Name="BoxActivityName" Height="25" TextWrapping="Wrap" Width="218" Canvas.Left="10" Canvas.Top="188"/>
             <TextBox x:Name="BoxActivityDescription" Height="25" TextWrapping="Wrap" Width="218" Canvas.Left="236" Canvas.Top="188"/>
             <TextBox x:Name="BoxActivityDateStart" Height="25" TextWrapping="Wrap" Width="218" Canvas.Left="10" Canvas.Top="218" FontSize="14"/>
             <TextBox x:Name="BoxActivityDateEnd" Height="25" TextWrapping="Wrap" Width="218" Canvas.Left="236" Canvas.Top="218" FontSize="14"/>
             <Button x:Name="ButtonAddActivity" Content="Add Activity" Width="103" Canvas.Left="459" Canvas.Top="188" Height="55" Click="ButtonAddActivity_Click"/>
-            <TextBlock x:Name="TextAgendas" TextWrapping="Wrap" Canvas.Left="45" Canvas.Top="286" Width="78" Height="25" FontSize="16" Text="Agendas"/>
-            <ListBox x:Name="MyListOfAgendas" Height="223" Width="140" Canvas.Left="10" Canvas.Top="316" SelectionChanged="MyListOfAgendas_SelectionChanged"/>
-            <TextBlock x:Name="TextActivites" TextWrapping="Wrap" Text="Activities" Canvas.Left="383" Canvas.Top="286" Height="25" Width="67" FontSize="16" RenderTransformOrigin="0.407,0.457"/>
-            <ListBox x:Name="MyListOfActivities" Height="223" Width="290" Canvas.Left="262" Canvas.Top="316" SelectionChanged="MyListOfActivities_SelectionChanged"/>
-            <TextBlock x:Name="TextParticipants" TextWrapping="Wrap" Text="Participants" Canvas.Left="169" Canvas.Top="286" FontSize="16" Height="25" Width="88"/>
-            <ListBox x:Name="MyListOfParticipants" Height="223" Width="100" Canvas.Left="157" Canvas.Top="316"/>
-            <Button x:Name="ButtonAddParticipants" Content="Add Participants" Width="103" Canvas.Left="459" Canvas.Top="128" Height="25" Click="ButtonAddParticipants_Click"/>
+            <TextBlock x:Name="TextAgendas" TextWrapping="Wrap" Canvas.Left="45" Canvas.Top="260" Width="78" Height="25" FontSize="16" Text="Agendas"/>
+            <ListBox x:Name="MyListOfAgendas" Height="223" Width="140" Canvas.Left="10" Canvas.Top="290" SelectionChanged="MyListOfAgendas_SelectionChanged"/>
+            <Button x:Name="ButtonDeleteAgenda" Content="Delete Agenda" Width="89" Canvas.Left="45" Canvas.Top="519" Click="ButtonDeleteAgenda_Click"/>
+            <TextBlock x:Name="TextActivites" TextWrapping="Wrap" Text="Activities" Canvas.Left="383" Canvas.Top="260" Height="25" Width="67" FontSize="16" RenderTransformOrigin="0.407,0.457"/>
+            <ListBox x:Name="MyListOfActivities" Height="223" Width="290" Canvas.Left="262" Canvas.Top="290" SelectionChanged="MyListOfActivities_SelectionChanged"/>
+            <Button x:Name="ButtonDeleteActivity" Content="Delete Activity" Width="84" Canvas.Left="370" Canvas.Top="518" Click="ButtonDeleteActivity_Click"/>
+            <TextBlock x:Name="TextParticipants" TextWrapping="Wrap" Text="Participants" Canvas.Left="169" Canvas.Top="260" FontSize="16" Height="25" Width="88"/>
+            <ListBox x:Name="MyListOfParticipants" Height="223" Width="100" Canvas.Left="157" Canvas.Top="290" SelectionChanged="MyListOfParticipants_SelectionChanged"/>
+            <Button x:Name="ButtonDeleteParticipant" Content="Delete Participant" Width="102" Canvas.Left="157" Canvas.Top="519" Click="ButtonDeleteParticipant_Click"/>
         </Canvas>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="E-Mail:" VerticalAlignment="Top" Margin="10,81,0,0" Height="20" Width="50" FontSize="16"/>
-        <TextBox x:Name="EMail" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="155" Margin="60,81,0,0" FontSize="16"/>
     </Grid>
 </Window>

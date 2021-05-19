@@ -49,14 +49,16 @@ namespace ScheduleWPF
 
             ChangeElementsVisibility(Visibility.Hidden);
 
-            MyListOfParticipants.IsEnabled = false;
-
             BoxAgendaName.IsReadOnly = true;
             BoxActivityName.IsReadOnly = true;
             BoxActivityDescription.IsReadOnly = true;
             BoxActivityDateStart.IsReadOnly = true;
             BoxActivityDateEnd.IsReadOnly = true;
             BoxParticipantsEMails.IsReadOnly = true;
+
+            ButtonDeleteAgenda.IsEnabled = false;
+            ButtonDeleteParticipant.IsEnabled = false;
+            ButtonDeleteActivity.IsEnabled = false;
         }
 
         private void ButtonAddPerson_Click(object sender, RoutedEventArgs e)
@@ -67,51 +69,108 @@ namespace ScheduleWPF
 
                 FirstName.Text = "";
                 LastName.Text = "";
+                EMail.Text = "";
             }
         }
         private void ButtonAddAgenda_Click(object sender, RoutedEventArgs e)
         {
             if (BoxAgendaName.Text != "")
             {
-                Person helper = (Person)MyListOfPersons.SelectedItem;
+                Person thisPerson = (Person)MyListOfPersons.SelectedItem;
 
-                helper.AddAgenda(BoxAgendaName.Text);
+                thisPerson.AddAgenda(BoxAgendaName.Text);
 
-                MyListOfAgendas.Items.Add(helper.GetAgenda(helper.GetNumberOfAgendas() - 1));
+                MyListOfAgendas.Items.Add(thisPerson.GetAgenda(thisPerson.GetNumberOfAgendas() - 1));
             }
 
             BoxAgendaName.Text = "";
             BoxParticipantsEMails.Text = "";
         }
+
+        private void ButtonDeleteAgenda_Click(object sender, RoutedEventArgs e)
+        {
+            Agenda thisPersonsAgenda = (Agenda)MyListOfAgendas.SelectedItem;
+
+            if (thisPersonsAgenda != null)
+            {
+                Person thisPerson = (Person)MyListOfPersons.SelectedItem;
+                
+                int indexToDeleteParticipant = thisPersonsAgenda.GetIndexOfParticipant(thisPerson);
+                int indexToDeleteAgenda = thisPerson.GetIndexOfAgenda(thisPersonsAgenda);
+
+                thisPersonsAgenda.DeleteParticipant(indexToDeleteParticipant);
+                thisPerson.DeleteAgenda(indexToDeleteAgenda);
+
+                MyListOfAgendas.Items.RemoveAt(MyListOfAgendas.Items.IndexOf(thisPersonsAgenda));
+                MyListOfParticipants.Items.Clear();
+                MyListOfActivities.Items.Clear();
+            }
+        }
         private void ButtonAddParticipants_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: Repair the program because it does not update the other agendas
-            if (BoxParticipantsEMails.Text != "" && MyListOfAgendas.SelectedItem != null)
+            if (BoxParticipantsEMails.Text != "")
             {
-                List<Person> tempListOfParticipants = new List<Person>();
+                Agenda thisPersonsAgenda = (Agenda)MyListOfAgendas.SelectedItem;
 
-                Person helper = (Person)MyListOfPersons.SelectedItem;
+                List<Person> thisAgendasListOfParticipants = new List<Person>();
 
-                string stringHelper = BoxParticipantsEMails.Text;
+                int numberOfParticipants = thisPersonsAgenda.GetNumberOfParticipants(), indexOfAgenda;
 
-                stringHelper = helper.EMail + "," + stringHelper.Replace(" ", "");
-
-                string[] stringEMails = stringHelper.Split(',');
-
-                foreach (Person item in MyListOfPersons.Items)
+                for (int i = 0; i < numberOfParticipants; i++)
                 {
-                    if (stringEMails.Contains(item.EMail))
+                    thisAgendasListOfParticipants.Add(thisPersonsAgenda.GetParticipant(i));
+                }
+
+                string stringParticipants = BoxParticipantsEMails.Text;
+
+                stringParticipants = stringParticipants.Replace(" ", "");
+
+                string[] stringEMails = stringParticipants.Split(',');   
+
+                foreach (Person newParticipant in MyListOfPersons.Items)
+                {
+                    if (stringEMails.Contains(newParticipant.EMail))
                     {
-                        tempListOfParticipants.Add(item);
+                        if ((indexOfAgenda = newParticipant.GetIndexOfAgenda(thisPersonsAgenda)) == -1)
+                        {
+                            newParticipant.AddAgenda(thisPersonsAgenda);
+
+                            MyListOfParticipants.Items.Add(newParticipant);
+                        }
+                        else
+                        {
+                            if (!thisAgendasListOfParticipants.Contains(newParticipant))
+                            {
+                                for (int i = 0; i < numberOfParticipants; i++)
+                                {
+                                    newParticipant.GetAgenda(indexOfAgenda).AddParticipant(thisAgendasListOfParticipants[i]);
+                                }
+                                
+                                MyListOfParticipants.Items.Add(newParticipant);
+                            }      
+                        } 
                     }
                 }
 
-                foreach (Person item in tempListOfParticipants)
-                {
-                    item.AddParticipants(MyListOfAgendas.SelectedItem.ToString(), tempListOfParticipants);
+                BoxParticipantsEMails.Text = "";
+            }
+        }
 
-                    MyListOfParticipants.Items.Add(item);
-                }
+        private void ButtonDeleteParticipant_Click(object sender, RoutedEventArgs e)
+        {
+            Person participantToDelete = (Person)MyListOfParticipants.SelectedItem;
+
+            if (!participantToDelete.Equals(MyListOfPersons.SelectedItem) && participantToDelete != null)
+            {             
+                Agenda agendaToDeleteFrom = (Agenda)MyListOfAgendas.SelectedItem;
+                
+                int indexToDeleteParticipant = agendaToDeleteFrom.GetIndexOfParticipant(participantToDelete);
+                int indexToDeleteAgenda = participantToDelete.GetIndexOfAgenda(agendaToDeleteFrom);
+
+                agendaToDeleteFrom.DeleteParticipant(indexToDeleteParticipant);
+                participantToDelete.DeleteAgenda(indexToDeleteAgenda);
+
+                MyListOfParticipants.Items.RemoveAt(MyListOfParticipants.Items.IndexOf(participantToDelete));
             }
         }
 
@@ -119,11 +178,11 @@ namespace ScheduleWPF
         {
             if (BoxActivityName.Text != "" && BoxActivityDescription.Text != "" && BoxActivityDateStart.Text != "" && BoxActivityDateEnd.Text != "")
             {
-                Agenda helper = (Agenda)MyListOfAgendas.SelectedItem;
+                Agenda thisAgenda = (Agenda)MyListOfAgendas.SelectedItem;
 
-                helper.AddActivity(BoxActivityName.Text, BoxActivityDescription.Text, BoxActivityDateStart.Text, BoxActivityDateEnd.Text);
+                thisAgenda.AddActivity(BoxActivityName.Text, BoxActivityDescription.Text, BoxActivityDateStart.Text, BoxActivityDateEnd.Text);
 
-                MyListOfActivities.Items.Add(helper.GetActivity(helper.GetNumberOfActivities() - 1));
+                MyListOfActivities.Items.Add(thisAgenda.GetActivity(thisAgenda.GetNumberOfActivities() - 1));
 
                 BoxActivityName.Text = "";
                 BoxActivityDescription.Text = "";
@@ -132,8 +191,28 @@ namespace ScheduleWPF
             }
         }
 
+        private void ButtonDeleteActivity_Click(object sender, RoutedEventArgs e)
+        {
+            Agenda thisPersonsAgenda = (Agenda)MyListOfAgendas.SelectedItem;
+
+            if (thisPersonsAgenda != null)
+            {
+                Activity thisAgendasActivity = (Activity)MyListOfActivities.SelectedItem;
+                
+                int indexOfActivity = thisPersonsAgenda.GetIndexOfActivity(thisAgendasActivity);
+
+                if (indexOfActivity != -1)
+                {
+                    thisPersonsAgenda.DeleteActivity(indexOfActivity);
+
+                    MyListOfActivities.Items.RemoveAt(MyListOfActivities.Items.IndexOf(thisAgendasActivity));
+                }
+            }
+        }
+
         private void MyListOfPersons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            #region UI changes when interacting with MyListOfPersons
             MyListOfAgendas.ReleaseAllTouchCaptures();
 
             MyListOfAgendas.Items.Clear();
@@ -148,26 +227,15 @@ namespace ScheduleWPF
             BoxActivityDateEnd.Text = "";
 
             BoxAgendaName.IsReadOnly = false;
-            BoxParticipantsEMails.IsReadOnly = false;
+            BoxParticipantsEMails.IsReadOnly = true;
             BoxActivityName.IsReadOnly = true;
             BoxActivityDescription.IsReadOnly = true;
             BoxActivityDateStart.IsReadOnly = true;
             BoxActivityDateEnd.IsReadOnly = true;
 
-            Person helper;
-
-            helper = (Person)e.AddedItems[0];
-
-            foreach (Person item in MyListOfPersons.Items)
-            {
-                if (helper.Equals(item))
-                {
-                    for (int i = 0; i < item.GetNumberOfAgendas(); i++)
-                    {
-                        MyListOfAgendas.Items.Add(item.GetAgenda(i));
-                    }
-                }
-            }
+            ButtonDeleteAgenda.IsEnabled = false;
+            ButtonDeleteParticipant.IsEnabled = false;
+            ButtonDeleteActivity.IsEnabled = false;
 
             PersonName.Text = MyListOfPersons.SelectedItem.ToString();
 
@@ -175,10 +243,27 @@ namespace ScheduleWPF
             {
                 ChangeElementsVisibility(Visibility.Visible);
             }
+            #endregion
+
+            Person thisPerson = (Person)e.AddedItems[0];
+
+            foreach (Person personFromList in MyListOfPersons.Items)
+            {
+                if (thisPerson.Equals(personFromList))
+                {
+                    int numberOfAgendas = personFromList.GetNumberOfAgendas();
+
+                    for (int i = 0; i < numberOfAgendas; i++)
+                    {
+                        MyListOfAgendas.Items.Add(personFromList.GetAgenda(i));
+                    }
+                }
+            }
         }
 
         private void MyListOfAgendas_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            #region UI changes when interacting with MyListOfAgendas
             MyListOfActivities.Items.Clear();
             MyListOfParticipants.Items.Clear();
 
@@ -195,42 +280,53 @@ namespace ScheduleWPF
             BoxActivityDateStart.IsReadOnly = false;
             BoxActivityDateEnd.IsReadOnly = false;
 
+            ButtonDeleteAgenda.IsEnabled = true;
+            ButtonDeleteParticipant.IsEnabled = false;
+            ButtonDeleteActivity.IsEnabled = false;
+            #endregion
+
             if (e.AddedItems.Count == 1)
             {
-                Agenda helper;
+                Agenda thisAgenda = (Agenda)e.AddedItems[0];
 
-                helper = (Agenda)e.AddedItems[0];
-
-                foreach (Agenda item in MyListOfAgendas.Items)
+                foreach (Agenda agendaFromList in MyListOfAgendas.Items)
                 {
-                    if (helper.Equals(item))
+                    if (thisAgenda.Equals(agendaFromList))
                     {
-                        for (int i = 0; i < item.GetNumberOfActivities(); i++)
+                        int numberOfActivities = agendaFromList.GetNumberOfActivities();
+
+                        for (int i = 0; i < numberOfActivities; i++)
                         {
-                            MyListOfActivities.Items.Add(item.GetActivity(i));
+                            MyListOfActivities.Items.Add(agendaFromList.GetActivity(i));
                         }
 
-                        for (int i = 0; i < item.GetNumberOfParticipants(); i++)
+                        int numberOfParticipants = agendaFromList.GetNumberOfParticipants();
+
+                        for (int i = 0; i < numberOfParticipants; i++)
                         {
-                            MyListOfParticipants.Items.Add(item.GetParticipant(i));
+                            MyListOfParticipants.Items.Add(agendaFromList.GetParticipant(i));
                         }
                     }
                 }
             }
         }
 
+        private void MyListOfParticipants_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            #region UI changes when interacting with MyListOfParticipants
+            ButtonDeleteAgenda.IsEnabled = false;
+            ButtonDeleteParticipant.IsEnabled = true;
+            ButtonDeleteActivity.IsEnabled = false;
+            #endregion
+        }
+
         private void MyListOfActivities_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MyListOfParticipants.Items.Clear();
-
-            BoxParticipantsEMails.Text = "";
-
-            BoxAgendaName.IsReadOnly = true;
-            BoxActivityName.IsReadOnly = true;
-            BoxActivityDescription.IsReadOnly = true;
-            BoxActivityDateStart.IsReadOnly = true;
-            BoxActivityDateEnd.IsReadOnly = true;
-            BoxParticipantsEMails.IsReadOnly = false;
+            #region UI changes when interacting with MyListOfActvities
+            ButtonDeleteAgenda.IsEnabled = false;
+            ButtonDeleteParticipant.IsEnabled = false;
+            ButtonDeleteActivity.IsEnabled = true;
+            #endregion
         }
 
         private void ChangeElementsVisibility(Visibility v)
@@ -247,6 +343,7 @@ namespace ScheduleWPF
             BoxParticipantsEMails.Visibility = v;
 
             ButtonAddAgenda.Visibility = v;
+            ButtonAddParticipants.Visibility = v;
             ButtonAddActivity.Visibility = v;
 
             TextAgendas.Visibility = v;

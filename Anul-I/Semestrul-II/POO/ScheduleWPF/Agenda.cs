@@ -23,11 +23,39 @@ namespace ScheduleWPF
             this.Name = name;
         }
 
-        public void SetParticipants(List<Person> tempListOfParticipants)
+        public void AddParticipant(Person newParticipant)
         {
-            foreach (Person item in tempListOfParticipants)
+            listOfParticipants.Add(newParticipant);
+        }
+        
+        public Person GetParticipant(int index)
+        {
+            return index > -1 ? listOfParticipants[index] : null;
+        }
+
+        public int GetNumberOfParticipants()
+        {
+            return listOfParticipants.Count;
+        }
+
+        public int GetIndexOfParticipant(Person thisParticipant)
+        {
+            for (int i = 0; i < listOfParticipants.Count; i++)
             {
-                listOfParticipants.Add(item);
+                if (listOfParticipants[i].Equals(thisParticipant))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public void DeleteParticipant(int index)
+        {
+            if (index != -1)
+            {
+                listOfParticipants.RemoveAt(index);
             }
         }
 
@@ -38,12 +66,7 @@ namespace ScheduleWPF
 
         public Activity GetActivity(int index)
         {
-            return listOfActivities[index];
-        }
-
-        public Person GetParticipant(int index)
-        {
-            return listOfParticipants[index];
+            return index > -1 ? listOfActivities[index] : null;
         }
 
         public int GetNumberOfActivities()
@@ -51,14 +74,26 @@ namespace ScheduleWPF
             return listOfActivities.Count;
         }
 
-        public int GetNumberOfParticipants()
+        public int GetIndexOfActivity(Activity thisActivity)
         {
-            return listOfParticipants.Count;
+            for (int i = 0; i < listOfActivities.Count; i++)
+            {
+
+                if (listOfActivities[i].Equals(thisActivity))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public void DeleteActivity(int index)
         {
-            listOfActivities.RemoveAt(index);
+            if (index != -1)
+            {
+                listOfActivities.RemoveAt(index);
+            }
         }
 
         public override string ToString()

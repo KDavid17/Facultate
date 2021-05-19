@@ -29,23 +29,38 @@ namespace ScheduleWPF
         public void AddAgenda(string name)
         {
             listOfAgendas.Add(new Agenda(name));
+
+            listOfAgendas[listOfAgendas.Count - 1].AddParticipant(this);
         }
 
-        public void AddParticipants(string name, List<Person> tempListOfParticipants)
+        public void AddAgenda(Agenda agenda)
         {
-            AddAgenda(name);
+            listOfAgendas.Add(agenda);
 
-            GetAgenda(GetNumberOfAgendas() - 1).SetParticipants(tempListOfParticipants);
+            listOfAgendas[listOfAgendas.Count - 1].AddParticipant(this);
         }
 
         public Agenda GetAgenda(int index)
         {
-            return listOfAgendas[index];
+            return index > -1 ? listOfAgendas[index] : null;
         }
-
+        
         public int GetNumberOfAgendas()
         {
             return listOfAgendas.Count;
+        }
+
+        public int GetIndexOfAgenda(Agenda thisAgenda)
+        {
+            for (int i = 0; i < listOfAgendas.Count; i++)
+            {
+                if (listOfAgendas[i].Equals(thisAgenda))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public void DeleteAgenda(int index)
