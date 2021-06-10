@@ -16,11 +16,12 @@
             <Button x:Name="ManhattanVoronoi" Content="Voronoi diagram - Manhattan" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,345,0,0" Height="40" FontSize="16" Click="ManhattanVoronoi_Click"/>
             <Button x:Name="ChebyshevVoronoi" Content="Voronoi diagram - Chebyshev" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,390,0,0" Height="40" FontSize="16" Click="ChebyshevVoronoi_Click"/>
             <Button x:Name="Clear" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,450,0,0" FontSize="16" Height="40" Click="Clear_Click"/>
-            <Button x:Name="AddPoint" Content="Add Points" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,155,0,0" Height="40" FontSize="16" Click="AddPoint_Click"/>
-            <TextBox x:Name="BoxX" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Margin="0,112,0,0" FontSize="16"/>
-            <TextBox x:Name="BoxY" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Margin="115,112,0,0" FontSize="16"/>
-            <Button x:Name="FindDistance" Content="Find Distance" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,200,0,0" Height="38" FontSize="16" Click="FindDistance_Click"/>
-            <TextBox x:Name="Distance" HorizontalAlignment="Left" Height="38" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Margin="0,243,0,0" FontSize="16"/>
+            <Button x:Name="AddPoint" Content="Add Points" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,169,0,0" Height="40" FontSize="16" Click="AddPoint_Click"/>
+            <TextBox x:Name="BoxX" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Margin="0,134,0,0" FontSize="16"/>
+            <TextBox x:Name="BoxY" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Margin="120,134,0,0" FontSize="16"/>
+            <Button x:Name="FindDistance" Content="Find Distance" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,214,0,0" Height="38" FontSize="16" Click="FindDistance_Click"/>
+            <TextBox x:Name="Distance" HorizontalAlignment="Left" Height="38" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Margin="0,257,0,0" FontSize="16" RenderTransformOrigin="0.585,0.684"/>
+            <Button x:Name="DelaunayTriangulation" Content="Delaunay Triangulation" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="0,76,0,0" Height="36" FontSize="16" Click="DelaunayTriangulation_Click"/>
         </Grid>
         <ProgressBar x:Name="Bar" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="720" Margin="10,507,0,0"/>
     </Grid>
