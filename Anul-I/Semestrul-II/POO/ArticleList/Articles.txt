@@ -1,0 +1,35 @@
+﻿Facebook
+Mark Zuckerberg
+I created Facebook.
+Founders
+6/12/2021 8:00:00 AM
+6/13/2021 8:00:01 AM
+24
+35
+#
+Twitter
+Elon Musk
+I influence Bitcoin with my tweets.
+Influencer
+6/9/2021 12:00:00 PM
+6/9/2021 13:00:00 PM
+19
+34
+#
+Rich People
+Jeff Bezos, Elon Musk, Bill Gates
+We are the richest people on the planet.
+Rich, Influencer
+6/9/2021 9:00:00 AM
+6/9/2021 10:00:00 AM
+61
+12
+#
+Microsoft
+Bill Gates
+I created Microsoft.
+Rich, Founders
+6/13/2021 9:00:00 AM
+6/13/2021 10:00:00 AM
+35
+34
